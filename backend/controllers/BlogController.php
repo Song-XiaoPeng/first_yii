@@ -2,35 +2,41 @@
 
 namespace backend\controllers;
 
-use backend\models\SignupForm;
+use backend\components\MyBehaviour;
 use Yii;
-use backend\models\UserBackend;
-use backend\models\UserBackendSearch;
+use backend\models\Blog;
+use backend\models\BlogSearch;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
+
 /**
- * UserBackendController implements the CRUD actions for UserBackend model.
+ * BlogController implements the CRUD actions for Blog model.
  */
-class UserBackendController extends Controller
+class BlogController extends Controller
 {
+    /*public function beforeAction($action)
+    {
+        $currentRequestRoute = Yii::$app->requestedRoute;
+        if (!Yii::$app->user->can('/' . $currentRequestRoute)) {
+            throw new \yii\web\ForbiddenHttpException($currentRequestRoute);
+        }
+
+        return true;
+    }*/
+
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['index','view','create','update','delete',''],
-                        'allow'   => true,
-                        'roles'   =>['@']
-                    ],
-                ],
-            ],
+            //附加行为
+//            'myBehavior' => MyBehaviour::className(),
+//            'as access'  => [
+//                'class' =>  'mdm\admin\components\AccessControl',
+//            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -41,12 +47,24 @@ class UserBackendController extends Controller
     }
 
     /**
-     * Lists all UserBackend models.
+     * Lists all Blog models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new UserBackendSearch();
+        //未登录或者不是用用户test1登录的情况下访问 /index.php?r=blog 会403
+        //而用户 test1 则访问
+        /*if(!Yii::$app->user->can('/blog/index')){
+            throw new ForbiddenHttpException("没有访问权限");
+        }
+        $myBehavior = $this->getBehavior('myBehavior');
+        $isGuest = $myBehavior->isGuest();
+        var_dump($isGuest);*/
+
+        /*$isGuest = $this->isGuest();
+        var_dump($isGuest);*/
+
+        $searchModel = new BlogSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -56,7 +74,7 @@ class UserBackendController extends Controller
     }
 
     /**
-     * Displays a single UserBackend model.
+     * Displays a single Blog model.
      * @param integer $id
      * @return mixed
      */
@@ -68,13 +86,13 @@ class UserBackendController extends Controller
     }
 
     /**
-     * Creates a new UserBackend model.
+     * Creates a new Blog model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new UserBackend();
+        $model = new Blog();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -86,7 +104,7 @@ class UserBackendController extends Controller
     }
 
     /**
-     * Updates an existing UserBackend model.
+     * Updates an existing Blog model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -105,7 +123,7 @@ class UserBackendController extends Controller
     }
 
     /**
-     * Deletes an existing UserBackend model.
+     * Deletes an existing Blog model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -118,45 +136,18 @@ class UserBackendController extends Controller
     }
 
     /**
-     * Finds the UserBackend model based on its primary key value.
+     * Finds the Blog model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return UserBackend the loaded model
+     * @return Blog the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = UserBackend::findOne($id)) !== null) {
+        if (($model = Blog::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
-
-    /**
-     *  create new user
-     */
-    public function actionSignup ()
-    {
-        // 实例化一个表单模型，这个表单模型我们还没有创建，等一下后面再创建
-        $model = new SignupForm();
-
-        // 下面这一段if是我们刚刚分析的第二个小问题的实现，下面让我具体的给你描述一下这几个方法的含义吧
-        // $model->load() 方法，实质是把post过来的数据赋值给model的属性
-        // $model->signup() 方法, 是我们要实现的具体的添加用户操作
-        if ($model->load(Yii::$app->request->post())) {
-
-            $model->signup();
-
-
-            // 添加完用户之后，我们跳回到index操作即列表页
-            return $this->redirect(['index']);
-        }
-
-        // 下面这一段是我们刚刚分析的第一个小问题的实现
-        // 渲染添加新用户的表单
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
     }
 }
