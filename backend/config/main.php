@@ -25,7 +25,7 @@ return [
             //这里是允许访问的action，不受权限控制
             //controller/action
                 "site/*",
-                "admin/*",
+//            "*"
         ]
     ],
     'components' => [
@@ -57,14 +57,14 @@ return [
             'class' => 'yii\rbac\DbManager',
             'defaultRoles' => ['guest'],
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+
         'assetManager' => [
             'bundles' => [
                 'dmstr\web\AdminLteAsset' => [

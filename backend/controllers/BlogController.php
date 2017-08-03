@@ -34,9 +34,9 @@ class BlogController extends Controller
         return [
             //附加行为
 //            'myBehavior' => MyBehaviour::className(),
-//            'as access'  => [
-//                'class' =>  'mdm\admin\components\AccessControl',
-//            ],
+            'as access'  => [
+                'class' =>  'mdm\admin\components\AccessControl',
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
