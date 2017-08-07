@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "blog".
@@ -25,13 +26,26 @@ class Blog extends \yii\db\ActiveRecord
         return 'blog';
     }
 
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',// 自己根据数据库字段修改
+                'updatedAtAttribute' => 'updated_at', // 自己根据数据库字段修改, // 自己根据数据库字段修改
+                //'value'   => new Expression('NOW()'),
+                'value'   => function(){return date('Y-m-d H:i:s',time());},
+            ],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'content', 'created_at', 'updated_at'], 'required'],
+            [['content'], 'required'],
             [['id', 'views', 'is_delete'], 'integer'],
             [['content'], 'string'],
             [['created_at', 'updated_at'], 'safe'],

@@ -1,0 +1,1 @@
+php.exe -q E:\htdocs\advanced\yii test/send

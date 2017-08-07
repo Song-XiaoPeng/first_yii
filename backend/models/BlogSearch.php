@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\Blog;
 
+
 /**
  * BlogSearch represents the model behind the search form about `backend\models\Blog`.
  */
@@ -47,6 +48,10 @@ class BlogSearch extends Blog
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 5,
+                'pageSizeParam' => false,
+            ],
         ]);
 
         $this->load($params);

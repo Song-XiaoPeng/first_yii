@@ -26,6 +26,9 @@ return [
             //controller/action
                 "site/*",
 //            "*"
+                "gii/*",
+                'test/*',
+                'debug/*'
         ]
     ],
     'components' => [
@@ -61,7 +64,12 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+//            'enableStrictParsing'=> true,
             'rules' => [
+                "<controller:\w+>/<action:\w+>"=>"<controller>/<action>",
+                '/blogs/<id:\d+>' => '/blog/view',
+                '/blogs' => '/blog/index',
+                '<controller:\w+>/<action:\w+>/<page:\d+>' => '<controller>/<action>',
             ],
         ],
 

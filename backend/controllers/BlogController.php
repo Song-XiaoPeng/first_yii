@@ -94,9 +94,14 @@ class BlogController extends Controller
     {
         $model = new Blog();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if(!$model->save()){
+                var_dump($model->errors);die;
+            }
+
+            return $this->redirect(['index']);
         } else {
+//            var_dump(111);die;
             return $this->render('create', [
                 'model' => $model,
             ]);
