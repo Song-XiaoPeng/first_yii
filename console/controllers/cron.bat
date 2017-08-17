@@ -1,3 +1,3 @@
 php.exe -q E:\htdocs\advanced\yii test/send
 
-shutdown -s -t 60
+:shutdown -s -t 60
