@@ -5,13 +5,12 @@ namespace backend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use backend\models\Blog;
-
+use backend\models\Category;
 
 /**
- * BlogSearch represents the model behind the search form about `backend\models\Blog`.
+ * CategorySearch represents the model behind the search form about `backend\models\Category`.
  */
-class BlogSearch extends Blog
+class CategorySearch extends Category
 {
     /**
      * @inheritdoc
@@ -19,8 +18,8 @@ class BlogSearch extends Blog
     public function rules()
     {
         return [
-            [['id', 'views', 'is_delete'], 'integer'],
-            [['title', 'content', 'created_at', 'updated_at'], 'safe'],
+            [['id'], 'integer'],
+            [['name'], 'safe'],
         ];
     }
 
@@ -42,16 +41,12 @@ class BlogSearch extends Blog
      */
     public function search($params)
     {
-        $query = Blog::find();
+        $query = Category::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => 5,
-                'pageSizeParam' => false,
-            ],
         ]);
 
         $this->load($params);
@@ -65,14 +60,9 @@ class BlogSearch extends Blog
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'views' => $this->views,
-            'is_delete' => $this->is_delete,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'content', $this->content]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

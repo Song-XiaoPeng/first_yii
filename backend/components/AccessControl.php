@@ -24,6 +24,7 @@ class AccessControl extends \yii\base\ActionFilter
         // 写的比较简单，有过基础的可自行完善，比如解决"*"的问题，看不懂的该行注释自行忽略
         $routes = [];
         $manager = Yii::$app->getAuthManager();
+
         foreach ($manager->getPermissionsByUser($userId) as $name => $value) {
             if ($name[0] === '/') {
                 $routes[] = $name;

@@ -2,41 +2,24 @@
 
 namespace backend\controllers;
 
-use backend\components\MyBehaviour;
 use Yii;
-use backend\models\Blog;
-use backend\models\BlogSearch;
+use backend\models\Category;
+use backend\models\CategorySearch;
 use yii\web\Controller;
-use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * BlogController implements the CRUD actions for Blog model.
+ * CategoryController implements the CRUD actions for Category model.
  */
-class BlogController extends Controller
+class CategoryController extends Controller
 {
-    /*public function beforeAction($action)
-    {
-        $currentRequestRoute = Yii::$app->requestedRoute;
-        if (!Yii::$app->user->can('/' . $currentRequestRoute)) {
-            throw new \yii\web\ForbiddenHttpException($currentRequestRoute);
-        }
-
-        return true;
-    }*/
-
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
         return [
-            //附加行为
-//            'myBehavior' => MyBehaviour::className(),
-            'as access'  => [
-                'class' =>  'mdm\admin\components\AccessControl',
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -47,24 +30,12 @@ class BlogController extends Controller
     }
 
     /**
-     * Lists all Blog models.
+     * Lists all Category models.
      * @return mixed
      */
     public function actionIndex()
     {
-        //未登录或者不是用用户test1登录的情况下访问 /index.php?r=blog 会403
-        //而用户 test1 则访问
-        /*if(!Yii::$app->user->can('/blog/index')){
-            throw new ForbiddenHttpException("没有访问权限");
-        }
-        $myBehavior = $this->getBehavior('myBehavior');
-        $isGuest = $myBehavior->isGuest();
-        var_dump($isGuest);*/
-
-        /*$isGuest = $this->isGuest();
-        var_dump($isGuest);*/
-
-        $searchModel = new BlogSearch();
+        $searchModel = new CategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -74,7 +45,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Displays a single Blog model.
+     * Displays a single Category model.
      * @param integer $id
      * @return mixed
      */
@@ -86,30 +57,41 @@ class BlogController extends Controller
     }
 
     /**
-     * Creates a new Blog model.
+     * Creates a new Category model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Blog();
+        $model = new Category();
 
-        if ($model->load(Yii::$app->request->post())) {
-            if(!$model->save()){
-                var_dump($model->errors);die;
-            }
-
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+//            return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirect(['index']);
         } else {
-//            var_dump(111);die;
-            return $this->render('create', [
+            return $this->renderAjax('create', [
                 'model' => $model,
             ]);
         }
     }
 
+    // @see http://www.manks.top/yii2_modal_activeform_ajax.html
+    // 看主要的验证操作，该操作是表单字段失去焦点时异步验证，同时如果直接提交表单，也会先执行该操作进行验证
+    /*public function actionValidateForm () {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $model = new Category();   //这里要替换成自己的模型类
+        $model->load(Yii::$app->request->post());
+        return \yii\widgets\ActiveForm::validate($model);
+    }*/
+    public function actionValidateForm ($id = null) {
+        $model = $id === null ? new Category() : Category::findOne($id);
+        $model->load(Yii::$app->request->post());
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return \yii\widgets\ActiveForm::validate($model);
+    }
     /**
-     * Updates an existing Blog model.
+     * Updates an existing Category model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -121,14 +103,14 @@ class BlogController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('update', [
+            return $this->renderAjax('update', [
                 'model' => $model,
             ]);
         }
     }
 
     /**
-     * Deletes an existing Blog model.
+     * Deletes an existing Category model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -141,15 +123,15 @@ class BlogController extends Controller
     }
 
     /**
-     * Finds the Blog model based on its primary key value.
+     * Finds the Category model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Blog the loaded model
+     * @return Category the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Blog::findOne($id)) !== null) {
+        if (($model = Category::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

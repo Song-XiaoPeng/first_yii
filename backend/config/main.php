@@ -24,8 +24,11 @@ return [
         'allowActions' => [
             //这里是允许访问的action，不受权限控制
             //controller/action
-                "site/*"
+                "site/*",
 //            "*"
+                "gii/*",
+                'test/*',
+                'debug/*'
         ]
     ],
     'components' => [
@@ -57,14 +60,19 @@ return [
             'class' => 'yii\rbac\DbManager',
             'defaultRoles' => ['guest'],
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+//            'enableStrictParsing'=> true,
             'rules' => [
+                "<controller:\w+>/<action:\w+>"=>"<controller>/<action>",
+                '/blogs/<id:\d+>' => '/blog/view',
+                '/blogs' => '/blog/index',
+                '<controller:\w+>/<action:\w+>/<page:\d+>' => '<controller>/<action>',
             ],
         ],
-        */
+
         'assetManager' => [
             'bundles' => [
                 'dmstr\web\AdminLteAsset' => [
