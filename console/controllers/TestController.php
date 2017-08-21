@@ -14,8 +14,6 @@ class TestController extends Controller
     public function actionSend()
     {
         $email = ['1079551334@qq.com','1300334237@qq.com','2019169887@qq.com','1206707214@qq.com','applesoft@qq.com'];
-//        $email = ['xulirun123@hotmail.com','1079551334@qq.com','861773557@qq.com'];
-//        $email = ['1079551334@qq.com'];
         $img = '<a href="https://baike.baidu.com/item/%E5%B9%B4%E8%BD%BB%E4%BA%BA%E4%B8%8D%E8%A6%81%E8%80%81%E7%86%AC%E5%A4%9C/16592221?fr=aladdin"><img src="http://img4.kuwo.cn/star/albumcover/240/77/37/717767107.jpg"></a>';
 
         $foot = '<div style="float:right;color:#9acd32;size:1px"><i>-- have a good night!</i></div>';
