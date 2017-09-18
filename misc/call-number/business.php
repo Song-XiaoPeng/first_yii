@@ -13,6 +13,20 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
     <h1 class="page-header text-overflow">业务管理</h1>
 </div>
 <?php $this->endBlock() ?>
+<style type="text/css">
+    .hide{
+        display: none;
+    }
+    .selected{
+        margin-left: 5px;
+        margin-top: 3px;
+        position:relative;
+    }
+    span{
+        position:absolute;right:10px;cursor: pointer;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-12">
         <div class="panel">
@@ -52,12 +66,11 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                         <td width=""><?php echo $one['hall_name'] ?></td>
                                         <td width=""><?php echo date('Y-m-d,H:i:s', $one['createtime']) ?></td>
                                         <td>
-                                            <div>
+                                            <div  class="btn-group mar-rgt">
                                                 <a href="javascript:void(0)" class="btn btn-success"
                                                    onclick="edit(<?php echo $one["id"]; ?>,'<?php echo $one["name"] ?>','<?php echo $one["require"] ?>','<?php echo $one["type"] ?>','<?php echo $one["office_id"] ?>','<?php echo $one["hall_id"] ?>','<?php echo $one["college_id"] ?>','<?php echo $one["college_name"] ?>','<?php echo $one["office_name"] ?>','<?php echo $one["hall_name"] ?>')">修改</a>
-                                                <a href="javascript:void(0)" class="btn btn-success"
-                                                   onclick="edit(<?php echo $one["id"]; ?>)">指派业务</a>
-                                                <a href="javascript:void(0)" class="btn btn-danger"
+                                                <a href="javascript:void(0)" class="btn btn-info"
+                                                   onclick="">详情</a><a href="javascript:void(0)" class="btn btn-danger"
                                                    onclick="confirm('确认删除')?del(<?php echo $one['id'] ?>) : false">删除</a>
                                             </div>
                                         </td>
@@ -93,8 +106,8 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
             <div class="modal-body">
                 <div class="bootbox-body">
                     <div class="row">
-                        <div class="col-md-12">
-                            <form class="form-horizontal" id="add-business">
+                        <form class="form-horizontal" id="add-business">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="col-md-4 control-label" for="name">
                                         <font>
@@ -116,7 +129,8 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                                   class="form-control input-md"></textarea>
                                     </div>
                                 </div>
-                                <div class="form-group">
+
+                                <div class="form-group" id="business_type">
                                     <label class="col-md-4 control-label" for="type">
                                         <font>
                                             <font>业务类型</font>
@@ -131,31 +145,16 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                         </select>
                                     </div>
                                 </div>
-                                <!-- 处室 -->
-                                <div class="form-group" style="display:none" id="business_type_office">
-                                    <label class="col-md-4 control-label" for="office_id">
-                                        <font>
-                                            <font>所属处室</font>
-                                        </font>
-                                    </label>
-                                    <div class="col-md-6">
-                                        <select name="office_id" id="" class="form-control">
-                                            <option value="0">请选择处室</option>
-                                            <?php if (!empty($office)) foreach ($office as $one): ?>
-                                                <option value="<?php echo $one['id']; ?>"><?php echo $one['name']; ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
+
                                 <!-- 大厅 -->
-                                <div class="form-group" style="display:none" id="business_type_hall">
+                                <div class="form-group" style="display:none" id="business_type_2">
                                     <label class="col-md-4 control-label" for="hall_id">
                                         <font>
                                             <font>所属大厅</font>
                                         </font>
                                     </label>
                                     <div class="col-md-6">
-                                        <select name="hall_id" id="hall_business" class="form-control">
+                                        <select name="hall_id" id="selHall" class="form-control">
                                             <option value="0">请选择大厅</option>
                                             <?php if (!empty($hall)) foreach ($hall as $one): ?>
                                                 <option value="<?php echo $one['id']; ?>"><?php echo $one['name']; ?></option>
@@ -164,14 +163,14 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                     </div>
                                 </div>
                                 <!-- 处室 -->
-                                <div class="form-group" style="display:none" id="business_type_office">
-                                    <label class="col-md-4 control-label" for="hall_id">
+                                <div class="form-group" style="display:none" id="business_type_1">
+                                    <label class="col-md-4 control-label" for="office_id">
                                         <font>
-                                            <font>所属处室：</font>
+                                            <font>所属处室</font>
                                         </font>
                                     </label>
                                     <div class="col-md-6">
-                                        <select name="office_id" id="hall_business_1" class="form-control">
+                                        <select name="office_id" id="sel_office" class="form-control">
                                             <option value="0">请选择处室</option>
                                             <?php if (!empty($office)) foreach ($office as $one): ?>
                                                 <option value="<?php echo $one['id']; ?>"><?php echo $one['name']; ?></option>
@@ -180,31 +179,18 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                     </div>
                                 </div>
                                 <!-- 学院 -->
-                                <div class="form-group" style="display:none" id="business_type_college">
+                                <div class="form-group" style="display:none" id="business_type_3">
                                     <label class="col-md-4 control-label" for="college_id">
                                         <font>
                                             <font>所属学院</font>
                                         </font>
                                     </label>
                                     <div class="col-md-6">
-                                        <select name="college_id" id="" class="form-control">
+                                        <select name="college_id" id="sel_college" class="form-control">
                                             <option value="0">请选择学院</option>
                                             <?php if (!empty($college)) foreach ($college as $one): ?>
                                                 <option value="<?php echo $one['id']; ?>"><?php echo $one['name']; ?></option>
                                             <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <!-- 办理老师 -->
-                                <div class="form-group" style="display:none" id="business_manager">
-                                    <label class="col-md-4 control-label" for="manager_id">
-                                        <font>
-                                            <font>办理老师</font>
-                                        </font>
-                                    </label>
-                                    <div class="col-md-6">
-                                        <select name="manager_id" id="sel_tea" class="form-control">
-                                            <option value="0" disabled>请选择老师</option>
                                         </select>
                                     </div>
                                 </div>
@@ -216,24 +202,43 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                         </font>
                                     </label>
                                     <div class="col-md-6">
-                                        <input type="text" name="window">
+                                        <input type="text" class="form-control" name="window">
                                     </div>
                                 </div>
-                                <!-- 已选办理老师 -->
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="demo-hor-inputemail">已选办理老师:</label>
+                                <!-- 办理老师 -->
+                                <div class="form-group"  id="business_manager">
+                                    <label class="col-md-4 control-label" for="teacher">
+                                        <font>
+                                            <font>办理老师</font>
+                                        </font>
+                                    </label>
                                     <div class="col-md-6">
-                                        <div style="height: 32px;" type="text" name="realname" class="form-control" id="selecteds">
-                                            <a type="button" class="btn btn-info btn-xs hide selected" name="selected">名字<span>×</span></a>
-                                        </div>
+                                        <select name="teacher" id="sel_teacher" class="form-control">
+                                            <option disabled  selected  value="0">请选择老师</option>
+                                        </select>
                                     </div>
                                 </div>
 
+
+                                <!-- 已选办理老师 -->
+                                <div class="form-group"  id="manager">
+                                    <label class="col-md-4 control-label" for="demo-hor-inputemail">已选办理老师:</label>
+                                    <div class="col-md-6" id="sel_selecteds"></div>
+
+                                    <div type="button" class="hide selected form-control" name="selected">名字 <span>x</span></div>
+                                </div>
+
+
                                 <input type="hidden" name="bak_hidden" >
                                 <input type="hidden" name="businessid" value="0">
-                            </form>
-                        </div>
+
+                            </div>
+                            <div class="col-md-4"></div>
+                        </form>
+
+
                     </div>
+
                     <script></script>
                 </div>
             </div>
@@ -241,6 +246,11 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                 <button data-bb-handler="success" type="button" class="btn btn-primary" id="business-save">
                     <font>
                         <font>保存</font>
+                    </font>
+                </button>
+                <button data-bb-handler="success" type="button" class="btn btn-danger" id="cancel">
+                    <font>
+                        <font>取消</font>
                     </font>
                 </button>
             </div>
@@ -286,7 +296,7 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                                   class="form-control input-md"></textarea>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <!--<div class="form-group">
                                     <label class="col-md-4 control-label" for="typ">
                                         <font>
                                             <font>业务类型</font>
@@ -296,7 +306,7 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
                                         <input name="type" readonly type="text" placeholder="业务类型"
                                                class="form-control input-md">
                                     </div>
-                                </div>
+                                </div>-->
 
                                 <div class="form-group" style="display:none" id="bus_position">
                                     <label class="col-md-4 control-label" for="position">
@@ -341,25 +351,28 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
         $('input[name=businessid]').val(id);
         $('input[name=name]').val(name);
         $('textarea[name=require]').val(require);
-        $('input[name=type]').val(type);
+//        $('input[name=type]').val(type);
         $('input[name=office_id]').val(office);
         $('input[name=hall_id]').val(hall);
         $('input[name=college_id]').val(college);
 
-        var position = $('#bus_position').clone();
+//        $('textarea[name=require]').closest('.form-group').nextAll().remove();
+        $('.modal-header .modal-title').find('font').text('修改业务');
+        $
+
         if(college_name != ''){
-            text = '所属学院'
-            addPosition(position,i,college_name);
+            text = '所属学院';
+
         }
         if(hall_name != ''){
-            text = '所属大厅'
-            addPosition(position,i,hall_name);
+            text = '所属大厅';
         }
         if(office_name != ''){
-            text = '所属处室'
-            addPosition(position,i,office_name);
+            text = '所属处室';
         }
-        $('#modal_edit').modal('show');
+
+
+        $('#modal').modal('show');
     }
 
     function addPosition(position,i,name){
@@ -429,6 +442,8 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
 
     //添加
     $('#add').on('click', function () {
+        $('.modal-header .modal-title').find('font').text('添加业务');
+        $('#add_type').val(0).closest('div.form-group').nextAll().hide();
         $('input[name=businessid]').val(0);
         $('input[name=name]').val('');
         $('input[name=require]').val('');
@@ -440,96 +455,107 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
     });
 
     $("#add_type").change(function () {
-        var type_idx = $(this).val();
-//        $("div[id^='business_type_']").hide();
-        $(this).closest('div.form-group').nextAll().hide();
+        changeType("#add_type");
+    });
 
-        $("#business_type_" + type_idx).show();
+    function changeType(exp){
+        $('#selHall').val(0);
+        $('#sel_office').val(0);
+        $('#sel_college').val(0);
+        $('#sel_teacher').html('<option disabled selected value="0">请选择老师</option>');
+        hallInit();
+        $(exp).closest('div.form-group').nextAll().hide();
+        var type = $(exp).val();
+        if(type == 0) return;
+        //根据type 显示
+        $('#business_type_'+type).show();
+        if(type == 2) {
+            $('#business_type_1').show();
+            $('#business_window').show();
+        }
+        //办理老师下拉列表
+        $('#business_manager').show();
+        //已选老师
+        $('#manager').show();
+    }
 
-        if (type_idx != 2) {//不是大厅业务
-            $("#business_type_" + type_idx).change(function () {
 
-                var dependence_idx = $(this).find('select').val();
+    $('#selHall').change(function(){
+        hallInit();
+        $('#sel_teacher').find('option[value=0]').attr('selected','selected');
+    });
 
-                if (type_idx == 1) {
-                    var idx = 3
-                } else if (type_idx == 3) {
-                    var idx = 2;
+    //添加大厅业务时，将已选择的管理员删除
+    function hallInit(){
+        $('input[name=window]').val(null);
+        $('#sel_selecteds').children().remove();
+        $('input[name^=manager_id]').remove();
+
+    }
+
+    //根据处室/学院 获得老师
+    $('div[id^=business_type]').find('select[id^=sel_]').change(function(){
+        hallInit();
+        var dependence_idx = $(this).val();
+        var type = $("#add_type").val();
+        if (lock) {
+            return;
+        }
+        lock = true;
+        $.ajax({
+            type: 'get',
+            data: {dependence_id: dependence_idx, type: type},
+            url: '<?php echo Yii::$app->urlManager->createUrl(['/backend/business/managers']);?>',
+            cache: false,
+            dataType: 'json',
+            success: function (args) {
+                if (args.e == 0) {
+                    var html = '<option disabled selected value=0>请选择老师</option>';
+                    if (args.d != '') {
+                        $.each(args.d, function (k, v) {
+                            html += '<option value="' + v.id + '">' + v.name + '</option>'
+                        })
+                    }
+                    $('#business_manager').find('select[name=teacher]').html(html);
                 } else {
-                    var idx = type_idx;
+
                 }
+                lock = false;
+            },
+            error: function () {
+                lock = false;
+            }
+        })
 
-                if (lock) {
-                    return;
-                }
-                lock = true;
-                $.ajax({
-                    type: 'get',
-                    data: {dependence_id: dependence_idx, type: idx},
-                    url: '<?php echo Yii::$app->urlManager->createUrl(['/backend/business/managers']);?>',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (args) {
-                        if (args.e == 0) {
-                            var html = '<option value=0>请选择老师</option>';
-                            if (args.d != '') {
-                                $.each(args.d, function (k, v) {
-                                    html += '<option value="' + v.id + '">' + v.name + '</option>'
-                                })
-                            }
-                            $('#business_manager').find('select[name=manager_id]').html(html);
-                        } else {
+    })
 
-                        }
-                        lock = false;
-                    },
-                    error: function () {
-                        lock = false;
-                    }
-                })
+    //显示已选老师
+    $('#sel_teacher').change(function(){
+        var window = $('input[name=window]').val();
+        var uid = $(this).val();
+        var html = $(this).find('option[value='+uid+']').html();
+        if (!html) return false;
 
-                $('#business_manager').show();
+        var send_html = html;
+        if(window) {
+            send_html = html + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;窗口号：" + window;
+            html += '窗口号：'+ window;
+            uid = uid + '_' + window;
+        }
+        var span_demo = '<span>×</span>';
+        if($('div[value='+html+']').length < 1 && $('input[value='+uid+']').length <1) {
+            $('input[name=bak_hidden]').clone(true).attr('name','manager_id[]').val(uid).appendTo('#add-business');
+            $('div[name=selected]').clone(true).removeClass('hide').removeAttr('name').attr('value',html).html(send_html+span_demo).appendTo('#sel_selecteds').find('span').click(function(){
+                $(this).closest('div').remove();
+                $('input[value='+uid+']').remove();
             });
-        } else {//大厅业务
-            $("#hall_business").change(function () {
-                $("#business_type_" + type_idx).show();
-                var idx = 3;
-                $("#business_type_4").show();
-                $("#hall_business_1").change(function () {
-                    var dependence_idx = $(this).val();
-                    if (lock) {
-                        return;
-                    }
-                    lock = true;
-                    $.ajax({
-                        type: 'get',
-                        data: {type: idx, dependence_id: dependence_idx},
-                        url: '<?php echo Yii::$app->urlManager->createUrl(['/backend/business/managers']);?>',
-                        cache: false,
-                        dataType: 'json',
-                        success: function (args) {
-                            if (args.e == 0) {
-                                var html = '<option value=0>请选择老师</option>';
-                                $.each(args.d, function (k, v) {
-                                    html += '<option value="' + v.id + '">' + v.name + '</option>'
-                                })
-                                $('#business_manager').find('select[name=manager_id]').html(html);
-                            } else {
-
-                            }
-                            lock = false;
-                        },
-                        error: function () {
-                            lock = false;
-                        }
-                    })
-                    $('#business_manager').show();
-                    $('#business_window').show();
-                });
-            })
         }
     });
 
+
+    //======================================================
+    //======================================================
+    //======================================================
     $('#business-save').on('click', function () {
         $('#business_type').hide();
         if (lock) {
@@ -544,9 +570,9 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
             dataType: 'json',
             success: function (args) {
                 if (args.e == 0) {
-                    $('#modal').modal('hide');
+//                    $('#modal').modal('hide');
                     alertUtil.alert('保存成功', function () {
-                        window.location.reload();
+//                        window.location.reload();
                     });
                 } else {
                     alertUtil.alert(args.m);
@@ -558,8 +584,8 @@ $cdn = Misc::get('common.schema') . Misc::get('common.cdndomain');
             }
         });
     });
-    $('#sel_tea').change(function(){
-
+    $('#cancel').click(function(){
+        window.location.reload();
     });
 </script>
 <?php $this->endBlock() ?>
