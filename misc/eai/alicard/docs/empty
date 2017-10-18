@@ -1,0 +1,100 @@
+public function actionCreate()
+    {
+        $rs = Yii::$app->aop->call('alipay.marketing.card.template.create', [
+            'request_id' => '201709141207000008',
+            'card_type' => 'OUT_MEMBER_CARD',
+            'biz_no_prefix' => 'xeechiao',
+            'biz_no_suffix_len' => '10',
+            'write_off_type'=> 'qrcode',
+            'template_style_info' => [
+                'card_show_name' => '我家熙乔的专属卡',
+                'logo_id' => 'shJhByJpScSYqKU5hkSq1wAAACMAAQED',
+                'background_id' => 'l1SbCxYkQH6PshuL3itkmQAAACMAAQED',
+                'bg_color' => 'rgb(55,112,179)',
+                'front_text_list_enable' => true,//是否在卡面展示文案信息
+                'front_image_enable' => true,//是否在卡面展示（个人头像）图片信息
+                //不起作用'slogan' => '标语',
+                //不起作用'slogan_img_id' => 'pSghWWrIQeSU6C3wwSCaCQAAACMAAQED', //标语图片,
+                //不起作用'brand_name' => '品牌商名称',
+            ],
+            'column_info_list' =>[
+                /*无意义,显示效果不好。[
+                    'code' => 'LEVEL',
+                    'operate_type' => 'staticinfo',
+                    'title' => '类别',
+                ],
+                [
+                    'code' => 'BALANCE',
+                    'operate_type' => 'staticinfo',
+                    'title' => '当前余额',
+                ],*/
+                [
+                    'code' => 'mm',
+                    'operate_type' => 'staticinfo',
+                    'title' => '美貌程度',
+                    'value' => '最漂亮'
+                ],
+                [
+                    'code' => 'renpin',
+                    'operate_type' => 'staticinfo',
+                    'title' => '人品',
+                    'value' => '没的说'
+                ],
+                [
+                    'code' => 'iq',
+                    'operate_type' => 'staticinfo',
+                    'title' => '智商',
+                    'value' => '不能说实话'
+                ],
+                [
+                    'code' => 'iq',
+                    'operate_type' => 'staticinfo',
+                    'title' => '情商',
+                    'value' => '特别让人爱'
+                ],
+            ],
+            'field_rule_list' => [
+                [
+                    'field_name' => 'OpenDate',
+                    'rule_name' => 'DATE_IN_FUTURE',
+                    'rule_value' => '0d'
+                ]
+            ],
+            'card_action_list' => [
+                [
+                    'code' => 'CARD_CHARGE',
+                    'text' => '选零食',
+                    'url' => 'http://eai.datamorality.com/chargecard/wap/default/index'
+                ],
+                [
+                    'code' => 'NETWORD_CHARGE',
+                    'text' => '选花',
+                    'url' => 'http://eai.datamorality.com/chargefee/wap/default/index'
+                ],
+            ],
+            /*不起作用'card_level_conf' => [
+                [
+                    'level' => 'jzg',
+                    'level_show_name' => '教工卡',
+                    'level_icon' => 'BZcRBtXQQ6aD9HFxC9CSZgAAACMAAQED',
+                    'level_desc' => '教工卡权益'
+                ],
+                [
+                    'level' => 'xsk',
+                    'level_show_name' => '学生卡',
+                    'level_icon' => 'eq567DthSTiEHTryYhrvTgAAACMAAQED',
+                    'level_desc' => '学生卡权益'
+                ],
+            ],*/
+        ]);
+        $response = $rs->alipay_marketing_card_template_create_response;
+        if ($response->code === "10000") {
+            $template_id = $response->template_id;
+        } else {
+            throw new \Exception($response->msg . ' ' . $response->sub_msg);
+        }
+        var_dump($template_id);
+        //template_id = 20170911000000000515841000300417--测试校园卡
+        //template_id = 20170914000000000533022000300418--瑞雷森科技大学
+        //20170914000000000539166000300417
+    }

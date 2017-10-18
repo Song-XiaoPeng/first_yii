@@ -1,0 +1,183 @@
+<?php
+namespace apps\alicard\controllers\wap;
+
+use Yii;
+use apps\WapController;
+use portal\helpers\ErrorMessage;
+use apps\alicard\ar\AlicardTemplate;
+use apps\alicard\ar\AlicardRecord;
+
+class GetController extends WapController
+{
+    
+    const expire = 126144000;
+
+
+    public function initAction($action, $require=null) 
+    {
+        return parent::initAction($action, $require);
+    }
+    
+    public function actionIndex() 
+    {
+        try{
+            $rs = Yii::$app->aop->oauth('auth_base,auth_user,auth_ecard');
+        } catch (\Exception $e) {
+            return $this->redirect('\alicard\wap\get\index');
+        }
+        Yii::$app->session['ali_accessToken'] = $rs->access_token;
+        Yii::$app->session['ali_userId'] = $rs->user_id;
+        return $this->render('index',[]);
+    }
+    
+    public function actionCommit()
+    {
+        $username = Yii::$app->request->post('username');
+        $password = Yii::$app->request->post('password');
+        if(empty($username) || empty($password)){
+            Yii::$app->message->error(ErrorMessage::ERR_ALICARD_RECIVE);
+        }
+        $accessToken = Yii::$app->session['ali_accessToken'];
+        $userId = Yii::$app->session['ali_userId'];
+        if(empty($accessToken) || empty($userId)){
+            Yii::$app->message->error(ErrorMessage::ERR_ALIAUTH_EXPRIRED);
+        }
+        $res = Yii::$app->aop->call('alipay.user.info.share',[],$accessToken);
+        $info = $res->alipay_user_info_share_response;
+        if($info->code != '10000'){
+            Yii::$app->message->error(ErrorMessage::ERR_ALIAUTH_EXPRIRED);
+        }
+        
+        $setting = AlicardTemplate::find()->asArray()->one();
+        if(empty($setting)){
+            throw new \Exception('校园卡暂未配置');
+        }
+        
+        $template_id = $setting['template_id'];
+        switch ($username){
+            case 'changxing':
+                $info = [
+                    [
+                        'label' => '姓名',
+                        'value' => '常兴',
+                    ],
+                    [
+                        'label' => '学工号',
+                        'value' => 'changxing',
+                    ],
+                    [
+                        'label' => '专业',
+                        'value' => '计算机科学与技术',
+                    ],
+                    [
+                        'label' => '类别',
+                        'value' => '学生卡',
+                    ]
+                ];
+                $xgh = 'changxing';
+                $photo = '';
+                break;
+            case 'chenxiqiao':
+                $info = [
+                    [
+                        'label' => '姓名',
+                        'value' => '陈熙乔',
+                    ],
+                    [
+                        'label' => '学工号',
+                        'value' => 'chenxiqiao',
+                    ],
+                    [
+                        'label' => '部门',
+                        'value' => '信息办',
+                    ],
+                    [
+                        'label' => '类别',
+                        'value' => '教工卡',
+                    ]
+                ];
+                $xgh = 'chenxiqiao';
+                $photo = '';
+                break;
+            case 'xeechiao':
+                $info = [
+                    [
+                        'label' => '姓名',
+                        'value' => '陈熙乔',
+                    ],
+                    [
+                        'label' => '职务',
+                        'value' => 'CEO',
+                    ],
+                    [
+                        'label' => '标签',
+                        'value' => '美女',
+                    ],
+                ];
+                $xgh = 'xeechiao';
+                $photo = 'gm6OmIwySmKKL7c7myQ6UwAAACMAAQED';
+                $template_id = '20170914000000000539166000300417';
+                break;
+            default :
+                $info = [
+                    [
+                        'label' => '姓名',
+                        'value' => $info->nick_name,
+                    ],
+                    [
+                        'label' => '性别',
+                        'value' => $info->gender == 'm' ? '男' : '女',
+                    ],
+                    [
+                        'label' => '账号',
+                        'value' => $username,
+                    ],
+                    [
+                        'label' => '类别',
+                        'value' => '游客卡',
+                    ],
+                ];
+                $photo = '';
+                $xgh = $username;
+        }
+        
+        $rs = Yii::$app->aop->call('alipay.marketing.card.open', [
+            'out_serial_no' => strval(time()), 
+            'card_template_id' => $template_id,
+            'open_card_channel' => 'rls',
+            'open_card_channel_id' => '10001',
+            'card_user_info' => [
+                'user_uni_id' => $userId,
+                'user_uni_id_type' => 'UID',
+            ],
+            'card_ext_info' => [
+                'open_date' => date('Y-m-d H:i:s'),
+                'valid_date' => date('Y-m-d H:i:s', time() + self::expire),
+                'external_card_no' => $xgh, // 我们系统的卡号
+                'front_text_list' => $info,
+                'front_image_id' => $photo,
+            ],
+            
+        ], $accessToken);
+        $response = $rs->alipay_marketing_card_open_response;
+        if ($response->code === "10000") {
+            $alicard = new AlicardRecord();
+            $alicard->uid = time();
+            $alicard->cardid = $xgh;
+            $alicard->userid = $userId;
+            $alicard->template_id = $setting['template_id'];
+            $alicard->biz_card_no = $response->card_info->biz_card_no;
+            $alicard->type = 0;
+            $alicard->created = time();
+            $alicard->valid_date = time() + self::expire;
+            
+            $alicard->save();
+            Yii::$app->message->success();
+        } else {
+            var_dump($response);exit;
+            error_log(var_export($response, true), 3, '/tmp/alicard_error');
+            Yii::$app->message->fail();
+        }
+    }
+
+}
