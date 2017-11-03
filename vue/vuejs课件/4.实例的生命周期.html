@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    {{message}}
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        data:{
+            message:'hello'
+        },
+        //当实例创建后就会调用created方法
+        created: function () {
+            alert('实例被创建了')
+        },
+        beforeCompile: function () {
+            alert('开始编译了');
+        },
+        compiled: function () {
+            alert('编译后');
+        },
+        ready: function () {
+            alert('进入文档');
+        },
+        beforeDestroy: function () {
+            alert('销毁之前');
+        },
+        destroyed: function () {
+            alert('销毁');
+        }
+    });
+    //手动挂载el元素
+    vm.$mount('#app');
+    vm.$destroy();
+    //虽然我们调用了$destroy 但是我们已经编译好的页面是不会被删除的，
+</script>
+</body>
+</html>

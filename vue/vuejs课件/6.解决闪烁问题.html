@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算属性</title>
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!--用作绑定动态数据并且防止闪烁-->
+    <div v-text="message"></div>
+    <div v-text="age"></div>
+    <!--v-cloak防止闪屏 原理 先将元素隐藏掉当获取数据后在将元素显示，display:block/none-->
+    <div v-cloak>
+        {{message}} {{age}}
+    </div>
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            message:'zfpx',
+            age:'7'
+        }
+    });
+    //angular解决闪烁问题  ng-bind  ng-cloak
+</script>
+</body>
+</html>

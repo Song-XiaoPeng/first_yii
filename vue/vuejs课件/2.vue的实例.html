@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    {{name}} {{age}}
+</div>
+<div id="app1">
+    {{message.name}}
+</div>
+<div class="" id=demo>
+  <input type="text"  v-model="hello">
+  <p>{{hello }}</p>{{ hello }}
+</div>
+<script src="vue.js"></script>
+<script>
+    new Vue({
+      el:'#demo',
+      data:{
+        hello:'你好'
+      }
+    })
+    // var message  = {
+    //     name:1
+    // };
+    // var vm = new Vue({
+    //     el:'#app',//el代表当前的数据的作用范围
+    //     data:message
+    // });
+    // //
+    // // //改对象上的数据 可以通过改变对象的值
+    // message.name = 200;
+    // // //让数据改变 指向了一个新的内存地址，不会影响实例上的变化
+    // message = {name:2}
+    // message.age = 400;
+    // // //当我们实例创建后原本不存在的属性，是无法绑定在视图上的
+    // // Vue.set vm.$set
+    // vm.name = 500;
+    // vm.age = 400;
+    // //
+    // var message1 = {
+    //     name:'zfpx'
+    // }
+    // var vm1 = new Vue({
+    //     el:'#app1',
+    //     data:{
+    //         message:message1
+    //     }
+    // });
+    // // //我们更改message上的属性会影响实例上的变化
+    // alert(vm1.message ===message1);
+    // // //实例是不能嵌套的 ，可以创建多个作用域块
+</script>
+</body>
+</html>

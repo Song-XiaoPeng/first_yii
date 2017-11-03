@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <!--在angular中实现双向绑定用ng-model-->
+    <input type="text" v-model="message">
+    <!--可以用作三元表达式 如果不加单引号默认取到的是模型上的数据-->
+    {{message?message:'zfpx'}} <br>
+    <!--一次绑定当数据改变的时候不更改数据-->
+    一次绑定：{{*message}} <br>
+    将html标签进行渲染：{{{message}}}
+</div>
+<script src="vue.js"></script>
+<script>
+    //创建一个Vue的实例 vm实现双向数据绑定 $scope
+    var vm = new Vue({
+        el:'#app',
+        data:{ //挂载在了viewModle上 就相当于挂在了vm的实例上
+            message:'<h1>hello</h1>' //将html的标签转化成我们的html
+        }
+    });
+    //view <- viewModel - > modle
+</script>
+</body>
+</html>

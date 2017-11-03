@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+<div id="app">
+    <table class="table table-bordered">
+        <tr>
+            <th>序号</th>
+            <th>名称</th>
+            <th>数量</th>
+            <th>价格</th>
+            <th>小计</th>
+            <th>操作</th>
+        </tr>
+        <tr v-for="book in books">
+            <td>{{$index+1}}</td>
+            <td>{{book.name}}</td>
+            <td><input type="text" v-model="book.count"></td>
+            <td>{{book.price}}</td>
+            <td>{{book.count*book.price}}</td>
+            <!--@相当于 v-on的简写-->
+            <td><button class="btn btn-danger" @click="remove(book)">删除</button></td>
+        </tr>
+        <tr v-show="books.length"><td colspan="6">
+            总价格{{total}}
+        </td></tr>
+    </table>
+    <div class="container">
+        <div class="form-group">
+            <label class="control-label">书的名字</label>
+            <input type="text" v-model="list.name" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="control-label">书的价格</label>
+            <input type="text" v-model="list.price" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="control-label">书的数量</label>
+            <input type="text" v-model="list.count" class="form-control">
+        </div>
+        <button class="btn btn-primary" @click="addBook">添加图书</button>
+    </div>
+
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            books:[
+                {name:'nodeJs',price:20,count:1},
+                {name:'angularJs',price:30,count:1},
+                {name:'vueJs',price:100,count:1},
+                {name:'reactJs',price:40,count:1},
+            ],
+            //要将新增的数据挂在里面 vue必须要写 不要之后再去加属性，要先声明好 warn
+            list:{
+                name:'',
+                price:'',
+                count:''
+            }
+        },
+        computed:{
+            total: function () {
+                var sum = 0;
+                this.books.forEach(function (item) {
+                    sum+= item.price*item.count;
+                });
+                return sum;
+            }
+        },
+        methods:{
+            remove: function (el) {
+                //相当于在数组中直接移出元素
+                this.books.$remove(el);
+               /* this.books = this.books.filter(function (item) {
+                   return  item!=el;
+                });*/
+            },
+            addBook: function () {
+                //如果在改变的话操作的是同一个空间
+                this.books.push({
+                    name:this.list.name,
+                    count:this.list.count,
+                    price:this.list.price
+                });
+                this.list = {
+                    name:'',
+                    price:'',
+                    count:''
+                }
+            }
+        }
+    })
+
+</script>
+</body>
+</html>

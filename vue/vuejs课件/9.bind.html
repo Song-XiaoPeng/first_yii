@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算属性</title>
+</head>
+<body>
+<div id="app">
+    <!--第一次请求的是{{src}} 第二次请求的是src-->
+    <!--v-bind和：效果一样 都是表示渲染一个动态的数据-->
+    <img :src="src" alt="">
+    <a :href="src">go logo</a>
+    <!--取动态数据就通过：形式-->
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            src:'http://vuejs.org/images/logo.png'
+        }
+    });
+    //bind绑定动态数据
+</script>
+</body>
+</html>

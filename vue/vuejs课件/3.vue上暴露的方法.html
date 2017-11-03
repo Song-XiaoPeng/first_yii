@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    {{message}}
+    <input type="text" v-model="message">
+</div>
+<script src="vue.js"></script>
+<script>
+    var message1 = {
+        message:'hello'
+    }
+    var vm = new Vue({
+        el:'#app',
+        data:message1
+    });
+    var message2 = {
+        message:'hello2'
+    }
+    //vm.$el就是取对应的当前作用在哪个元素上
+    //当el一旦绑定过一次后，以后就不会在改变了
+    //vm.$el =document.getElementById('app1');
+    //vm.$data指向的就是data后面的那个对象
+    console.log(vm.$data === message1);
+    vm.$data = message2;
+    //直接将实例上的data属性指向了一个新的空间，所有视图可以改变；
+    //尽量不要使用这种方式
+    //监控方法的改变
+    vm.$watch('message', function (newVal,oldVal) {
+        //新的值和旧的值
+        console.log(newVal,oldVal);
+    });
+
+</script>
+</body>
+</html>

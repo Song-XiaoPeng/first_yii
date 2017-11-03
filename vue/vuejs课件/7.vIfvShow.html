@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算属性</title>
+    <style>
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <span v-show="flag">123</span>
+    <div v-else>hello{{message}}</div>
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            message:'zfpx',
+            flag:false
+        }
+    });
+    //v-if  v-show   - >  ng-show ng-hide ng-if
+    //v-if当条件成立的时候会将元素加上，不成立，就会移出dom，并且内部的指令不会执行
+    //v-show只是简单的隐藏和显示
+    //template是我们vue自己设定的一个标签,不会进行页面的渲染
+    //v-if 和v-else 就是一对，并且else和if要连写
+    //v-show是不支持template 但是v-show是支持v-else的
+
+
+    //假如折叠菜单 点一下消失点一下隐藏 肯定要用v-show
+</script>
+</body>
+</html>

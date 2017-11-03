@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>two-way-bind-5</title>
+</head>
+<body>
+<div id="app">
+	<p>姓名:{{user.name}}</p>
+	<p>年龄:{{user.age}}</p>
+</div>
+<!--<script src="vue.js"></script>-->
+<script>
+	/*
+	 * 遍历属性walk
+	 * 转换属性convert
+	 * 需要绑定监听$watch
+	 * dom渲染render
+	 * 初始化init
+	 * */
+	//    Vue构造函数将要把入口(entry)和data实例化
+	let Vue = function (obj) {
+		this.entry = document.querySelector(obj.el);
+		this.data = {};
+		this.init(obj);
+	};
+	//    用来遍历输入的对象
+	Vue.prototype.walk = function (output, input) {
+		for (let key in input) {
+			if (input.hasOwnProperty(key)) {
+				if (typeof input[key] !== 'object' || input[key] === null) {
+					this.convert(output, key, input[key]);
+				} else {
+					this.walk(output[key] = {}, input[key]);
+				}
+			}
+		}
+	};
+	//    将输入转换成Vue实例上的访问器属性
+	Vue.prototype.convert =
+			function (ins, key, value) {
+				let _value = value;
+				let that = this;
+				Object.defineProperty(ins, key, {
+					configurable: true,
+					enumerable: true,
+					get: function () {
+						return _value;
+					},
+					set: function (newVal) {
+						if (newVal === null || typeof newVal !== 'object') {
+							_value = newVal;
+							that.render(that.data, that.entry);
+						} else {
+							delete ins[key];
+							that.walk(ins[key], newVal);
+							that.render(that.data, that.entry);
+						}
+					}
+				})
+			};
+	//    用来给某个属性绑定回调函数,这个任务先不做这个了，任务二里做过了，发布-订阅呗
+	//    Vue.prototype.$watch = function (attr, fn) {
+	//
+	//    };
+	//    查询某个属性在data中的值
+	Vue.prototype.find = function (key, data) {
+		for (let i = 0, len = key.length; i < len; i++) {
+			if (data.hasOwnProperty(key[i])) {
+				data = data[key[i]];
+			} else {
+				return undefined;
+			}
+		}
+		return data;
+	};
+	//    用来渲染页面
+	Vue.prototype.render = (function () {
+		let domCache;
+		return function (data, entry) {
+			console.log('render...');
+			domCache = domCache || entry.innerHTML;
+			let domInnerHtml = domCache;
+			let reg = /{{.*}}/g;
+			let templateArr = [];
+			let matchCache;
+			let keyCache;
+			let value;
+			while (matchCache = reg.exec(domCache)) {
+				templateArr.push(matchCache[0]);
+			}
+			templateArr.forEach(item => {
+				keyCache = item.slice(2, -2).split('.');
+			value = this.find(keyCache, data);
+			if (value !== undefined && (typeof value !== 'object' || value === null)) {
+				reg = new RegExp('{{' + keyCache.join('.') + '}}', 'g');
+				domInnerHtml = domInnerHtml.replace(reg, value);
+			}
+		});
+			entry.innerHTML = domInnerHtml;
+		}
+	}());
+	//    初始化，遍历传入的对象转换成实例上的访问器，渲染一下页面
+	Vue.prototype.init = function (obj) {
+		this.walk(this.data, obj.data);
+		this.render(this.data, this.entry);
+	};
+	let app = new Vue({
+		el: '#app',
+		data: {
+			user: {
+				name: 'rennaiqian',
+				age: 23
+			},
+			school: 'neu',
+			major: 'ee'
+		}
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算属性</title>
+</head>
+<body>
+<div id="app">
+    <!--同ng-repeat就是将数据遍历到我们的页面上-->
+    <!--(key,value){{$key}} 代表当前对象的键值-->
+    <!--$index $last $first $even $odd-->
+    <!--遍历对象-->
+    <div v-for="value in message">
+        {{$index}}{{$key}}{{value}}
+    </div>
+    <!--遍历数组-->
+    <div v-for="(index,a) in arr">
+        <div v-for="t in a.type">
+            <!--在儿子里拿到父索引-->
+            {{index}}{{$index}}{{t}}
+        </div>
+    </div>
+    <!--遍历相同数据 尽量遍历数组的时候指定trackby-->
+    <div v-for="a in arr2" track-by="$index">
+        {{a}}
+    </div>
+
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            message:{
+                name:'zfpx',
+                age:7,
+                hobby:[
+                    "writeJS",
+                    "writeCSS"
+                ]
+            },
+            arr:[
+                {name:'三星',age:7,type:['黄色','蓝色']},
+                {name:'三星',age:7,type:['黄色','蓝色']},
+                {name:'苹果',age:9,type:['黑色','玫瑰金','白色']},
+                {name:'华为',age:10,type:['灰色']}
+            ],
+            arr2:[
+                '苹果',
+                '苹果',
+                '苹果',
+                '苹果',
+            ]
+        }
+    });
+</script>
+</body>
+</html>

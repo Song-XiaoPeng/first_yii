@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <div v-on:click='world(3,$event)'>{{message}}</div>
+</div>
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            message:'hello'
+        },
+        methods: {
+            world: function (e,ev) {
+                //e事件源
+				console.log(e);
+                console.log(ev);
+                alert('world');
+            }
+        }
+        //如果我们在click中加入括号事件源就无法自动传递
+        //我们可以手动将我们的$event进行传递
+    })
+</script>
+</body>
+</html>
